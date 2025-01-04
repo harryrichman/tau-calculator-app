@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import json
+import numpy as np
 
 # from curvature import (
 #     node_resistance_curvature,
@@ -20,50 +21,38 @@ def get_labels():
     print("request.form:", request.form)
     user_data = request.form
     try:
-        AM = json.loads(user_data['am'])  # adjacency matrix
+        LM = json.loads(user_data['lm'])  # laplacian matrix
         V = json.loads(user_data['v'])
         t = json.loads(user_data['t'])
         print("Type =", t)
-    except Exception:
-        print("error triggered")
+    except Exception as e:
+        print("error triggered:", e)
         return '["error0"]'
+
+    # calculate number of spanning trees
+    LMred = np.matrix(LM)
+    LMred = LMred[:-1, :-1]
+    kappa = np.linalg.det(LMred)
+    kappa = int(np.round(kappa))
+    print("sp tree count:", kappa)
+
+    print("get-labels success")
+    # return json.dumps(kappa)
 
     if t == 1:
         # link resistance curvature
         try:
-            LRC = link_resistance_curvature(AM)
+            # LRC = link_resistance_curvature(LM)
             ret = dict()
-            ret["AM"] = AM
+            ret["LM"] = LM
             ret["LRC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
+            ret["kappa"] = kappa
 
-            for i in range(len(V)):
-                for j in range(len(V)):
-                    ret["LRC"][i][j] = round(LRC[i][j], 3)
-        except Exception:
-            return '["error19"]'
-
-    elif t == 2:
-        # node resistance curvature
-        try:
-            print("AM =", AM)
-            C = node_resistance_curvature(AM)
-            ret = [round(C[i], 3) for i in range(len(V))]
+            # for i in range(len(V)):
+            #     for j in range(len(V)):
+            #         ret["LRC"][i][j] = round(LRC[i][j], 3)
         except Exception as e:
-            print(e)
-            return '["error18"]'
-
-    elif t == 3:
-        # foster coefficient
-        try:
-            FC = foster_coefficients(AM)
-            ret = dict()
-            ret["AM"] = AM
-            ret["FC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
-
-            for i in range(len(V)):
-                for j in range(len(V)):
-                    ret["FC"][i][j] = round(FC[i][j], 3)
-        except Exception:
+            print("error:", e)
             return '["error19"]'
     else:
         print(f"error: type t={t} not recognized")

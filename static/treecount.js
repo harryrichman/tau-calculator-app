@@ -15,9 +15,9 @@ $(document).ready(function() {
   
   var curveType = 1;
   var showLabels = 1;
-  var AM = [];
+  var LM = [];
   var V = [];
-  var AMstring = "";
+  var LMstring = "";
   var Vstring = "";
   var cy = window.cy = cytoscape({
     container: document.getElementById('cy'),
@@ -86,14 +86,14 @@ $(document).ready(function() {
   cy.style().selector('node').style({
     'overlay-opacity': '0'
   }).update();
-  $("#admjsoncontainer").hide();
+  $("#lapmjsoncontainer").hide();
   $("#controlsinfo").hide();
   pushStateToStack();
 
-  function buildAM() {
-    // adjacency matrix
+  function buildLM() {
+    // Laplacian matrix
     V = [];
-    AM = [];
+    LM = [];
     nodes = cy.nodes("[weight>0]");
     numV = nodes.length;
     for (i = 0; i < numV; i++) {
@@ -101,9 +101,9 @@ $(document).ready(function() {
     }
     Vstring = JSON.stringify(V);
     for (var i = 0; i < numV; i++) {
-      AM[i] = new Array(numV);
+      LM[i] = new Array(numV);
       for (var j = 0; j < numV; j++) {
-        AM[i][j] = 0;
+        LM[i][j] = 0;
       }
     }
     edges = cy.edges("[weight>0]");
@@ -113,11 +113,13 @@ $(document).ready(function() {
       target = edges[i].data().target;
       vs = V.indexOf(source);
       vt = V.indexOf(target);
-      AM[vs][vt] = 1;
-      AM[vt][vs] = 1;
+      LM[vs][vt] = -1;
+      LM[vt][vs] = -1;
+      LM[vs][vs] += 1;
+      LM[vt][vt] += 1;
     }
-    AMstring = JSON.stringify(AM);
-    $('#admjson').text(AMstring);
+    LMstring = JSON.stringify(LM);
+    $('#lapmjson').text(LMstring);
   }
 
   function updateLabels(json) {
@@ -139,19 +141,22 @@ $(document).ready(function() {
       edges[i].data('ecurve', "");
       edges[i].data('pol', '#aaaaaa');
     }
+    // spanning tree count
+    console.log("updating sp tree count")
+    $('#spTrees').text(json["kappa"])
     if (curveType == 1) { // link resistance curvature
       for (i = 0; i < numV; i++) {
         for (j = 0; j < numV; j++) {
           if (i == j) continue;
-          if (typeof json["AM"][i] === "undefined") continue;
-          if (json["AM"][i][j] == 0) continue;
+          if (typeof json["LM"][i] === "undefined") continue;
+          if (json["LM"][i][j] == 0) continue;
           //only connected i,j left
-          console.log("searching for edges from " + i + " to " + j);
+          // console.log("searching for edges from " + i + " to " + j);
           selected_edges = cy.edges(
             `[source="${nodes[i].data().id}"][target="${nodes[j].data().id}"]`
           )
           if (selected_edges.length == 1) {
-            console.log("single edge found with given endpoints");
+            // console.log("single edge found with given endpoints");
             LRC = Math.round(json["LRC"][i][j] * 1000) / 1000
             selected_edges[0].data('ecurve', LRC);
             if (LRC < 0) {
@@ -167,31 +172,6 @@ $(document).ready(function() {
           }
         }
       }
-    } else if (curveType == 3) { // foster coefficient
-      for (i = 0; i < numV; i++) {
-        for (j = 0; j < numV; j++) {
-          if (i == j) continue;
-          if (typeof json["AM"][i] === "undefined") continue;
-          if (json["AM"][i][j] == 0) continue;
-          //only connected i,j left
-          selected_edges = cy.edges(
-            `[source="${nodes[i].data().id}"][target="${nodes[j].data().id}"]`
-          )
-          if (selected_edges.length == 1) {
-            FC = Math.round(json["FC"][i][j] * 1000) / 1000
-            selected_edges[0].data('ecurve', FC);
-            if (FC < 0) {
-              selected_edges[0].data('pol', "#ef8888");
-            } else if (FC > 0) {
-              selected_edges[0].data('pol', "#8888ef");
-            } else {
-              selected_edges[0].data('pol', "#aaaaaa");
-            }
-          } else {
-            console.log("error: more than one edge found!");
-          }
-        }
-      };
     } else { // node-based curvature
       for (i = 0; i < numV; i++) {
         id = nodes[i].data().id;
@@ -224,27 +204,6 @@ $(document).ready(function() {
     }
   }
 
-  function getVertexLabels() {
-    curveType = $("#curveType").val();
-    if (curveType != 0) {
-      console.log("Error occurred; vertex labels generated with other type set")
-    }
-    if (cy.nodes("[weight>0]").length == 1) {
-      cy.nodes("[weight>0]")[0].data('pol', "#000000");
-      if (showLabels == 0) {
-        cy.nodes("[weight>0]")[0].data('curve', "");
-        return;
-      }
-      if (curveType == 0) { // vertex labels
-        cy.nodes("[weight>0]")[0].data('curve', "v0");
-        return;
-      } else {
-        cy.nodes("[weight>0]")[0].data('curve', "0");
-        return;
-      }
-    }
-  }
-
   function getlabels() {
     curveType = $("input[type='radio'][name='curvType']:checked").val();
     // curveType = $("#curveType").val();
@@ -269,7 +228,7 @@ $(document).ready(function() {
       }
     }
     else {
-      buildAM();
+      buildLM();
       if (typeof(spinner) != "undefined") {
         spinner.stop();
       }
@@ -282,7 +241,7 @@ $(document).ready(function() {
         url: "get-labels",
         // url: "{{ url_for('get-labels') }}",
         data: {
-          am: AMstring,
+          lm: LMstring,  // laplacian matrix
           v: Vstring,
           t: curveType,
           d: "2",
@@ -291,6 +250,7 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(json) {
           var patt = new RegExp("error");
+          console.log(json[0]);
           var err = patt.test(json[0]);
           if (!err) {
             updateLabels(json);
@@ -298,6 +258,7 @@ $(document).ready(function() {
             console.log(json);
             spinner.stop();
           } else {
+            console.log("error detected")
             if (json[0] == "error8") {
               nodes = cy.nodes("[weight>0]");
               for (i = 0; i < nodes.length; i++) {
@@ -378,7 +339,7 @@ $(document).ready(function() {
   }
 
   function connectNodes(n1, n2) {
-    console.log("Try to connect nodes " + n1 + " and " + n2);
+    // console.log("Try to connect nodes " + n1 + " and " + n2);
     if (n1 != n2) { //if not the same
       var e = cy.$("node#" + n1);
       var j = cy.$("node#" + n2);
@@ -611,13 +572,13 @@ $(document).ready(function() {
     removeEdge(edge);
   });
 
-  $("#admhideshow").click(function(event) {
-    if ($("#admjsoncontainer").is(":visible")) {
-      $("#admjsoncontainer").hide();
-      $("#admhideshow").text("[Show]");
+  $("#lapmhideshow").click(function(event) {
+    if ($("#lapmjsoncontainer").is(":visible")) {
+      $("#lapmjsoncontainer").hide();
+      $("#lapmhideshow").text("[Show]");
     } else {
-      $("#admjsoncontainer").show();
-      $("#admhideshow").text("[Hide]");
+      $("#lapmjsoncontainer").show();
+      $("#lapmhideshow").text("[Hide]");
     }
   });
 
@@ -707,7 +668,7 @@ $(document).ready(function() {
     switch (event.which) {
       case 1:
         if (addNewNode == 0 && hoveringOnNode == 1) {
-          console.log("starting add new node mode...")
+          // console.log("starting add new node mode...")
           //cy.$("node#"+hoveringNode).style({'background-color':'#18e018'});
           cy.$("node#" + hoveringNode).data('pol', '#FF8C00');
           $('#addcircle').css({

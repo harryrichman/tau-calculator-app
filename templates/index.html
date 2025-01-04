@@ -158,7 +158,7 @@
               <input type="radio" id="rad1" name="curvType" value="1" checked/>
               <label for="rad1">Edge curvature</label>
             </div>
-            <div>
+            <!-- <div>
               <input type="radio" id="rad2" name="curvType" value="2"/>
               <label for="rad2">Vertex curvature</label>
             </div>
@@ -169,7 +169,7 @@
             <div>
               <input type="radio" id="rad0" name="curvType" value="0"/>
               <label for="rad0">Vertex label</label>
-            </div>
+            </div> -->
           </fieldset>
         </form>
         <hr />
@@ -179,20 +179,24 @@
               Number of edges: <output name="edges">0</output>
             </div>
             <div>
-              Number of spanning trees: <output name="spTrees">1</output>
+              Number of spanning trees: <output name="spTrees" id="spTreesForm">1</output>
+            </div>
+            <!-- <div>
+              Number of 2-forests: <output name="twoForests">1</output>
             </div>
             <div>
-              Number of 2-forests: <output name="spTrees">1</output>
-            </div>
+              Number of spanning unicycles: <output name="spUnis">1</output>
             <div>
               Tau constant: <output name="spTrees">1</output>
             </div>
             <div>
               |E| / &tau;: <output name="spTrees">1</output>
-            </div>
+            </div> -->
 
           </fieldset>
         </form>
+        Spanning tree count:
+        <div id="spTrees">0</div>
         <hr>
         <a style="font-weight: 600; font-size: 12px;" id="showhideinfo" href="javascript:void(0)">[Show Help]</a>
           <div id="controlsinfo">
@@ -222,10 +226,10 @@
 
   <div style="font-weight: 600;" id="adm">
     <div>
-      Adjacency Matrix <a id="admhideshow" href="javascript:void(0)">[Show]</a>
+      Adjacency Matrix <a id="lapmhideshow" href="javascript:void(0)">[Show]</a>
     </div>
-    <div id="admjsoncontainer">
-      <div style="font-weight: 300;" id="admjson">
+    <div id="lapmjsoncontainer">
+      <div style="font-weight: 300;" id="lapmjson">
         <pre>[]</pre>
       </div>
     </div>
