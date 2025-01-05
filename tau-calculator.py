@@ -2,11 +2,11 @@ from flask import Flask, render_template, request
 import json
 import numpy as np
 
-# from curvature import (
+from resistance import (
 #     node_resistance_curvature,
 #     link_resistance_curvature,
-#     foster_coefficients,
-# )
+    foster_coefficients,
+)
 
 app = Flask(__name__)
 
@@ -42,15 +42,15 @@ def get_labels():
     if t == 1:
         # link resistance curvature
         try:
-            # LRC = link_resistance_curvature(LM)
+            FC = foster_coefficients(LM)
             ret = dict()
             ret["LM"] = LM
-            ret["LRC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
+            ret["FC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
             ret["kappa"] = kappa
 
-            # for i in range(len(V)):
-            #     for j in range(len(V)):
-            #         ret["LRC"][i][j] = round(LRC[i][j], 3)
+            for i in range(len(V)):
+                for j in range(len(V)):
+                    ret["FC"][i][j] = round(FC[i][j], 3)
         except Exception as e:
             print("error:", e)
             return '["error19"]'

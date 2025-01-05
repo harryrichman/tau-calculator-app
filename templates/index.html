@@ -150,7 +150,21 @@
 	  <i>The Tau Constant Calculator and the curvatures of cubic graphs,</i> Experimental Mathematics, 2019<br>
 		<i>(arXiv:1712.03033 [math.CO])</i>
         </div>-->
-        <hr>
+        <hr />
+        <form onsubmit="return false">
+          <fieldset id="radioFosterToggle">
+            <legend>Show Foster coefficients?</legend>
+            <div>
+              <input type="radio" id="fosterYes" name="fosterToggle"/>
+              <label for="fosterYes">Yes</label>
+            </div>
+            <div>
+              <input type="radio" id="fosterNo" name="fosterToggle" checked/>
+              <label for="fosterNo">No</label>
+            </div>
+          </fieldset>
+        </form>
+        <hr />
         <form style="margin:0;"  onsubmit="return false">
           <fieldset id="radioCurveType">
             <legend>Select</legend>
@@ -158,11 +172,11 @@
               <input type="radio" id="rad1" name="curvType" value="1" checked/>
               <label for="rad1">Edge curvature</label>
             </div>
-            <!-- <div>
+            <div>
               <input type="radio" id="rad2" name="curvType" value="2"/>
               <label for="rad2">Vertex curvature</label>
             </div>
-            <div>
+            <!-- <div>
               <input type="radio" id="rad3" name="curvType" value="3"/>
               <label for="rad3">Foster coefficient</label>
             </div>

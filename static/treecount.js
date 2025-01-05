@@ -157,11 +157,11 @@ $(document).ready(function() {
           )
           if (selected_edges.length == 1) {
             // console.log("single edge found with given endpoints");
-            LRC = Math.round(json["LRC"][i][j] * 1000) / 1000
-            selected_edges[0].data('ecurve', LRC);
-            if (LRC < 0) {
+            FC = Math.round(json["FC"][i][j] * 1000) / 1000
+            selected_edges[0].data('ecurve', FC);
+            if (FC < 0) {
               selected_edges[0].data('pol', "#ef8888");
-            } else if (LRC > 0) {
+            } else if (FC > 0) {
               selected_edges[0].data('pol', "#8888ef");
             } else {
               selected_edges[0].data('pol', "#aaaaaa");
