@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request
 import json
-import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib as mpl
 
 from resistance import (
 #     node_resistance_curvature,
 #     link_resistance_curvature,
     foster_coefficients,
+    spanning_tree_count,
+    two_forest_count,
+    tau_constant,
 )
 
 app = Flask(__name__)
@@ -30,11 +34,10 @@ def get_labels():
         return '["error0"]'
 
     # calculate number of spanning trees
-    LMred = np.matrix(LM)
-    LMred = LMred[:-1, :-1]
-    kappa = np.linalg.det(LMred)
-    kappa = int(np.round(kappa))
-    print("sp tree count:", kappa)
+    kappa = spanning_tree_count(LM)
+    kappa2 = two_forest_count(LM)
+    tau = tau_constant(LM)
+    print("tau_const:", tau)
 
     print("get-labels success")
     # return json.dumps(kappa)
@@ -46,11 +49,16 @@ def get_labels():
             ret = dict()
             ret["LM"] = LM
             ret["FC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
+            ret["edgeColor"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
             ret["kappa"] = kappa
+            ret["kappa2"] = kappa2
+            ret["tau"] = tau
 
+            # cmap = mpl.colormaps['Blues']
             for i in range(len(V)):
                 for j in range(len(V)):
                     ret["FC"][i][j] = round(FC[i][j], 3)
+                    # ret["edgeColor"] = cmap(FC[i][j])
         except Exception as e:
             print("error:", e)
             return '["error19"]'

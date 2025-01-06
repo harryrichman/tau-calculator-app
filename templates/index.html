@@ -190,19 +190,19 @@
         <form id="graph-outputs">
           <fieldset>
             <div>
-              Number of edges: <output name="edges">0</output>
+              Number of edges: <output name="edges" id="edgeCount">0</output>
             </div>
             <div>
               Number of spanning trees: <output name="spTrees" id="spTrees">1</output>
             </div>
+            <div>
+              Number of two-forests: <output name="twoForests" id="twoForests">0</output>
+            </div>
+            <div>
+              Inverse tau constant ratio: <output id="invTauRatio">-</output>
+            </div>
             <!-- <div>
-              Number of 2-forests: <output name="twoForests">1</output>
-            </div>
-            <div>
               Number of spanning unicycles: <output name="spUnis">1</output>
-            <div>
-              Tau constant: <output name="spTrees">1</output>
-            </div>
             <div>
               |E| / &tau;: <output name="spTrees">1</output>
             </div> -->
@@ -240,7 +240,7 @@
 
   <div style="font-weight: 600;" id="adm">
     <div>
-      Adjacency Matrix <a id="lapmhideshow" href="javascript:void(0)">[Show]</a>
+      Laplacian Matrix <a id="lapmhideshow" href="javascript:void(0)">[Show]</a>
     </div>
     <div id="lapmjsoncontainer">
       <div style="font-weight: 300;" id="lapmjson">

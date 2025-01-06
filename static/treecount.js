@@ -141,9 +141,14 @@ $(document).ready(function() {
       edges[i].data('ecurve', "");
       edges[i].data('pol', '#aaaaaa');
     }
+    $('#edgeCount').text(numE);
+    tau = json["tau"]
+    console.log("tau: " + tau)
+    $('#invTauRatio').text(numE / tau)
     // spanning tree count
     console.log("updating sp tree count")
-    $('#spTrees').text(json["kappa"])
+    $('#spTrees').text(json["kappa"]);
+    $('#twoForests').text(json["kappa2"]);
     if (curveType == 1) { // link resistance curvature
       for (i = 0; i < numV; i++) {
         for (j = 0; j < numV; j++) {
@@ -161,8 +166,11 @@ $(document).ready(function() {
             selected_edges[0].data('ecurve', FC);
             if (FC < 0) {
               selected_edges[0].data('pol', "#ef8888");
-            } else if (FC > 0) {
-              selected_edges[0].data('pol', "#8888ef");
+            } else if (FC >= 0) {
+              //  selected_edges[0].data('pol', "#8888ef");
+              cfrac = 240 - Math.round(FC * 2 * 255)
+              cfrac = Math.max(cfrac, 0)
+              selected_edges[0].data('pol', `rgb(${cfrac}, ${cfrac}, 240)`);
             } else {
               selected_edges[0].data('pol', "#aaaaaa");
             }
