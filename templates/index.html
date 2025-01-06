@@ -151,6 +151,31 @@
 		<i>(arXiv:1712.03033 [math.CO])</i>
         </div>-->
         <hr />
+        <form id="graph-outputs">
+          <fieldset>
+            <div>
+              Number of edges: <output name="edges" id="edgeCount">0</output>
+            </div>
+            <div>
+              Number of spanning trees: <output name="spTrees" id="spTrees">1</output>
+            </div>
+            <div>
+              Number of two-forests: <output name="twoForests" id="twoForests">0</output>
+            </div>
+            <div>
+              Inverse tau constant ratio: <output id="invTauRatio">-</output>
+            </div>
+            <!-- <div>
+              Number of spanning unicycles: <output name="spUnis">1</output>
+            <div>
+              |E| / &tau;: <output name="spTrees">1</output>
+            </div> -->
+
+          </fieldset>
+        </form>
+        Spanning tree count:
+        <div id="spTrees2">0</div>
+        <hr />
         <form onsubmit="return false">
           <fieldset id="radioFosterToggle">
             <legend>Show Foster coefficients?</legend>
@@ -186,31 +211,6 @@
             </div> -->
           </fieldset>
         </form>
-        <hr />
-        <form id="graph-outputs">
-          <fieldset>
-            <div>
-              Number of edges: <output name="edges" id="edgeCount">0</output>
-            </div>
-            <div>
-              Number of spanning trees: <output name="spTrees" id="spTrees">1</output>
-            </div>
-            <div>
-              Number of two-forests: <output name="twoForests" id="twoForests">0</output>
-            </div>
-            <div>
-              Inverse tau constant ratio: <output id="invTauRatio">-</output>
-            </div>
-            <!-- <div>
-              Number of spanning unicycles: <output name="spUnis">1</output>
-            <div>
-              |E| / &tau;: <output name="spTrees">1</output>
-            </div> -->
-
-          </fieldset>
-        </form>
-        Spanning tree count:
-        <div id="spTrees2">0</div>
         <hr>
         <a style="font-weight: 600; font-size: 12px;" id="showhideinfo" href="javascript:void(0)">[Show Help]</a>
           <div id="controlsinfo">

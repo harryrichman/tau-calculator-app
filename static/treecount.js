@@ -168,9 +168,11 @@ $(document).ready(function() {
               selected_edges[0].data('pol', "#ef8888");
             } else if (FC >= 0) {
               //  selected_edges[0].data('pol', "#8888ef");
-              cfrac = 240 - Math.round(FC * 2 * 255)
-              cfrac = Math.max(cfrac, 0)
-              selected_edges[0].data('pol', `rgb(${cfrac}, ${cfrac}, 240)`);
+              // create color gradient
+              // color = hsl(226, 100.00%, 40.60%);
+              cfrac = Math.round(FC * 2 * 100);
+              cfrac = Math.min(cfrac, 100);
+              selected_edges[0].data('pol', `hsl(225, ${cfrac}%, ${80 - 0.2 * cfrac}%)`);
             } else {
               selected_edges[0].data('pol', "#aaaaaa");
             }
