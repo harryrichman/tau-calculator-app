@@ -94,6 +94,8 @@ def tau_constant(L):
     g = m - n + 1
     kappa = spanning_tree_count(L)
     kappa2 = two_forest_count(L)
-    tau = 1.0 / 3 * kappa2 / kappa + 1.0 / 6 * g - 1.0 / 12 * m
-    return tau
-
+    try:
+        tau = 1.0 / 3 * kappa2 / kappa + 1.0 / 6 * g - 1.0 / 12 * m
+        return tau
+    except ZeroDivisionError:
+        return None

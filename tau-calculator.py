@@ -22,13 +22,14 @@ def main():
 
 @app.route("/get-labels", methods=["POST"])
 def get_labels():
-    print("request.form:", request.form)
+    ## debugging
+    # print("request.form:", request.form)
     user_data = request.form
     try:
         LM = json.loads(user_data['lm'])  # laplacian matrix
         V = json.loads(user_data['v'])
-        t = json.loads(user_data['t'])
-        print("Type =", t)
+        # t = json.loads(user_data['t'])
+        # print("Type =", t)
     except Exception as e:
         print("error triggered:", e)
         return '["error0"]'
@@ -42,36 +43,26 @@ def get_labels():
     print("get-labels success")
     # return json.dumps(kappa)
 
-    if t == 1:
-        # link resistance curvature
-        try:
-            FC = foster_coefficients(LM)
-            ret = dict()
-            ret["LM"] = LM
-            ret["FC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
-            ret["edgeColor"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
-            ret["kappa"] = kappa
-            ret["kappa2"] = kappa2
-            ret["tau"] = tau
+    # link resistance curvature
+    try:
+        FC = foster_coefficients(LM)
+        ret = dict()
+        ret["LM"] = LM
+        ret["FC"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
+        ret["kappa"] = kappa
+        ret["kappa2"] = kappa2
+        ret["tau"] = tau
 
-            # cmap = mpl.colormaps['Blues']
-            for i in range(len(V)):
-                for j in range(len(V)):
-                    ret["FC"][i][j] = round(FC[i][j], 3)
-                    # ret["edgeColor"] = cmap(FC[i][j])
-        except Exception as e:
-            print("error:", e)
-            return '["error19"]'
-    else:
-        print(f"error: type t={t} not recognized")
-        return "error"
+        # cmap = mpl.colormaps['Blues']
+        # ret["edgeColor"] = [[0 for _ in range(len(V))] for _ in range(len(V))]
+        for i in range(len(V)):
+            for j in range(len(V)):
+                ret["FC"][i][j] = round(FC[i][j], 3)
+                # ret["edgeColor"] = cmap(FC[i][j])
+    except Exception as e:
+        print("error:", e)
+        return '["error19"]'
     return json.dumps(ret)
-
-    # return (
-    #     json.dumps({"success": True}),
-    #     200,
-    #     {"ContentType": "application/json"}
-    # )
 
 if __name__ == "__main__":
     app.run(debug=True)

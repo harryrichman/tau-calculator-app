@@ -1,6 +1,7 @@
 
 var undoStack = new Array();
 var curveTypeStack = new Array();
+var fosterOnStack = new Array ();
 $(document).ready(function() {
   spinner.stop();
 
@@ -14,6 +15,7 @@ $(document).ready(function() {
   var sourceNode = "";
   
   var curveType = 1;
+  var fosterOn = 0;
   var showLabels = 1;
   var LM = [];
   var V = [];
@@ -54,7 +56,7 @@ $(document).ready(function() {
       "data": {
         "id": "n40",
         "weight": 1,
-        "curve": "0",
+        // "curve": "0",
         "pol": "#000000"
       },
       "position": {
@@ -128,10 +130,10 @@ $(document).ready(function() {
     edges = cy.edges("[weight>0]");
     numE = edges.length;
     // debugging
-    console.log("nodes: ");
-    console.log(nodes);
-    console.log("edges: ");
-    console.log(edges);
+    // console.log("nodes: ");
+    // console.log(nodes);
+    // console.log("edges: ");
+    // console.log(edges);
     //clean up
     for (i = 0; i < numV; i++) {
       nodes[i].data('curve', "");
@@ -149,61 +151,45 @@ $(document).ready(function() {
     console.log("updating sp tree count")
     $('#spTrees').text(json["kappa"]);
     $('#twoForests').text(json["kappa2"]);
-    if (curveType == 1) { // link resistance curvature
-      for (i = 0; i < numV; i++) {
-        for (j = 0; j < numV; j++) {
-          if (i == j) continue;
-          if (typeof json["LM"][i] === "undefined") continue;
-          if (json["LM"][i][j] == 0) continue;
-          //only connected i,j left
-          // console.log("searching for edges from " + i + " to " + j);
-          selected_edges = cy.edges(
-            `[source="${nodes[i].data().id}"][target="${nodes[j].data().id}"]`
-          )
-          if (selected_edges.length == 1) {
-            // console.log("single edge found with given endpoints");
-            FC = Math.round(json["FC"][i][j] * 1000) / 1000
+    
+    for (i = 0; i < numV; i++) {
+      for (j = 0; j < numV; j++) {
+        if (i == j) continue;
+        if (typeof json["LM"][i] === "undefined") continue;
+        if (json["LM"][i][j] == 0) continue;
+        //only connected i,j left
+        // console.log("searching for edges from " + i + " to " + j);
+        selected_edges = cy.edges(
+          `[source="${nodes[i].data().id}"][target="${nodes[j].data().id}"]`
+        )
+        if (selected_edges.length == 1) {
+          // console.log("single edge found with given endpoints");
+          FC = Math.round(json["FC"][i][j] * 1000) / 1000
+          if (fosterOn == 1) {
+            console.log("fosterOn switch applied")
             selected_edges[0].data('ecurve', FC);
-            if (FC < 0) {
-              selected_edges[0].data('pol', "#ef8888");
-            } else if (FC >= 0) {
-              //  selected_edges[0].data('pol', "#8888ef");
-              // create color gradient
-              // color = hsl(226, 100.00%, 40.60%);
-              cfrac = Math.round(FC * 2 * 100);
-              cfrac = Math.min(cfrac, 100);
-              selected_edges[0].data('pol', `hsl(225, ${cfrac}%, ${80 - 0.2 * cfrac}%)`);
-            } else {
-              selected_edges[0].data('pol', "#aaaaaa");
-            }
-          } else if (selected_edges.length > 1) {
-            console.log("error: more than one edge found!");
-            console.log(selected_edges.length)
+          } else{
+            console.log("fosterOn not applied")
           }
-        }
-      }
-    } else { // node-based curvature
-      for (i = 0; i < numV; i++) {
-        id = nodes[i].data().id;
-        vs = V.indexOf(id);
-        // console.log("vertex id vs: " + vs); // debugging
-        if (curveType == 0) { // vertex labels
-          nodes[i].data('curve', 'v' + vs);
-          nodes[i].data('pol', '#000000');
-        } else if (curveType == 2) { // vertex resistance curvature
-          nodes[i].data('curve', json[vs]);
-          if (json[vs] < 0) {
-            nodes[i].data('pol', '#e01818');
-          } else if (json[vs] > 0) {
-            nodes[i].data('pol', '#1818e0');
+          if (FC < 0) {
+            selected_edges[0].data('pol', "#ef8888");
+          } else if (FC >= 0) {
+            //  selected_edges[0].data('pol', "#8888ef");
+            // create color gradient
+            // color = hsl(226, 100.00%, 40.60%);
+            cfrac = Math.round(FC * 2 * 100);
+            cfrac = Math.min(cfrac, 100);
+            selected_edges[0].data('pol', `hsl(225, ${cfrac}%, ${80 - 0.2 * cfrac}%)`);
           } else {
-            nodes[i].data('pol', '#000000');
+            selected_edges[0].data('pol', "#aaaaaa");
           }
-        } else {
-          console.log("error: invalid curveType")
+        } else if (selected_edges.length > 1) {
+          console.log("error: more than one edge found!");
+          console.log(selected_edges.length)
         }
       }
     }
+
     if (showLabels == 0) {
       for (i = 0; i < numV; i++) {
         nodes[i].data('curve', "");
@@ -215,9 +201,12 @@ $(document).ready(function() {
   }
 
   function getlabels() {
-    curveType = $("input[type='radio'][name='curvType']:checked").val();
+    // curveType = $("input[type='radio'][name='curvType']:checked").val();
+    fosterOn = $("input[type='radio'][name='fosterToggle']:checked").val();
+    console.log("fosterOn value: " + fosterOn)
     // curveType = $("#curveType").val();
-    if (cy.nodes("[weight>0]").length == 1) {
+    if (cy.nodes("[weight>0]").length == 1) { // single vertex
+      console.log("single vertex mode")
       cy.nodes("[weight>0]")[0].data('pol', "#000000");
       if (showLabels == 0) {
         cy.nodes("[weight>0]")[0].data('curve', "");
@@ -227,11 +216,11 @@ $(document).ready(function() {
         cy.nodes("[weight>0]")[0].data('curve', "v0");
         return;
       } else {
-        cy.nodes("[weight>0]")[0].data('curve', "0");
+        // cy.nodes("[weight>0]")[0].data('curve', "0");
         return;
       }
     }
-    if (curveType == 0) {
+    if (curveType == 0) { // vertex label
       // fill in
       for (i = 0; i < cy.nodes("[weight>0]").length; i++) {
         cy.nodes("[weight>0]")[i].data('curve', "v" + i);
@@ -253,7 +242,7 @@ $(document).ready(function() {
         data: {
           lm: LMstring,  // laplacian matrix
           v: Vstring,
-          t: curveType,
+          // t: curveType,
           d: "2",
           idlen: "0"
         },
@@ -443,11 +432,11 @@ $(document).ready(function() {
     //test for symmetry and zero diagonal
     numV = newAM.length;
 
-    zerodiag = 1;
+    zerodiag = true;
     for (i = 0; i < numV; i++) {
-      if (newAM[i][i] != 0) zerodiag = 0;
+      if (newAM[i][i] != 0) zerodiag = false;
     }
-    if (zerodiag == 0) return -3;
+    if (zerodiag == false) return -3;
 
     symmetric = 1;
     for (i = 0; i < numV; i++) {
@@ -660,7 +649,7 @@ $(document).ready(function() {
     popStateFromStack();
   });
 
-  $("#radioCurveType").change(function() {
+  $("#radioFosterToggle").change(function() {
     getlabels();
     pushStateToStack();
     console.log("radio button change");

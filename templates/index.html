@@ -180,17 +180,17 @@
           <fieldset id="radioFosterToggle">
             <legend>Show Foster coefficients?</legend>
             <div>
-              <input type="radio" id="fosterYes" name="fosterToggle"/>
+              <input type="radio" id="fosterYes" name="fosterToggle" value="1"/>
               <label for="fosterYes">Yes</label>
             </div>
             <div>
-              <input type="radio" id="fosterNo" name="fosterToggle" checked/>
+              <input type="radio" id="fosterNo" name="fosterToggle" value="0" checked/>
               <label for="fosterNo">No</label>
             </div>
           </fieldset>
         </form>
         <hr />
-        <form style="margin:0;"  onsubmit="return false">
+        <!-- <form style="margin:0;"  onsubmit="return false">
           <fieldset id="radioCurveType">
             <legend>Select</legend>
             <div>
@@ -201,17 +201,17 @@
               <input type="radio" id="rad2" name="curvType" value="2"/>
               <label for="rad2">Vertex curvature</label>
             </div>
-            <!-- <div>
+            <div>
               <input type="radio" id="rad3" name="curvType" value="3"/>
               <label for="rad3">Foster coefficient</label>
             </div>
             <div>
               <input type="radio" id="rad0" name="curvType" value="0"/>
               <label for="rad0">Vertex label</label>
-            </div> -->
+            </div>
           </fieldset>
         </form>
-        <hr>
+        <hr> -->
         <a style="font-weight: 600; font-size: 12px;" id="showhideinfo" href="javascript:void(0)">[Show Help]</a>
           <div id="controlsinfo">
             <div style="font-weight: 600;font-size: 12px;">
@@ -232,6 +232,7 @@
             </div>
             <div style="font-weight: 300;font-size: 12px;">
               Harry Richman<br />
+              David Cushing et al.<br />
               Includes the graph visualisation software <a href="https://github.com/cytoscape/cytoscape.js">cytoscape.js</a> (MIT Licenced).
             </div>
         </div>
