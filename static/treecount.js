@@ -148,7 +148,7 @@ $(document).ready(function() {
     console.log("tau: " + tau)
     $('#invTauRatio').text(numE / tau)
     // spanning tree count
-    console.log("updating sp tree count")
+    // console.log("updating sp tree count")
     $('#spTrees').text(json["kappa"]);
     $('#twoForests').text(json["kappa2"]);
     
@@ -166,10 +166,10 @@ $(document).ready(function() {
           // console.log("single edge found with given endpoints");
           FC = Math.round(json["FC"][i][j] * 1000) / 1000
           if (fosterOn == 1) {
-            console.log("fosterOn switch applied")
+            // console.log("fosterOn switch applied")
             selected_edges[0].data('ecurve', FC);
           } else{
-            console.log("fosterOn not applied")
+            // console.log("fosterOn not applied")
           }
           if (FC < 0) {
             selected_edges[0].data('pol', "#ef8888");
@@ -203,7 +203,7 @@ $(document).ready(function() {
   function getlabels() {
     // curveType = $("input[type='radio'][name='curvType']:checked").val();
     fosterOn = $("input[type='radio'][name='fosterToggle']:checked").val();
-    console.log("fosterOn value: " + fosterOn)
+    // console.log("fosterOn value: " + fosterOn)
     // curveType = $("#curveType").val();
     if (cy.nodes("[weight>0]").length == 1) { // single vertex
       console.log("single vertex mode")
@@ -249,12 +249,10 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(json) {
           var patt = new RegExp("error");
-          console.log(json[0]);
+          // console.log(json[0]);
           var err = patt.test(json[0]);
           if (!err) {
             updateLabels(json);
-            console.log("json:");
-            console.log(json);
             spinner.stop();
           } else {
             console.log("error detected")
@@ -652,7 +650,7 @@ $(document).ready(function() {
   $("#radioFosterToggle").change(function() {
     getlabels();
     pushStateToStack();
-    console.log("radio button change");
+    // console.log("radio button change");
   });
   $("#dimN").change(function() {
     getlabels();
